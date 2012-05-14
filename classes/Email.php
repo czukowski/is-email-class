@@ -6,7 +6,7 @@
  * @author   Kirill Šustov
  * @license  BSD License
  */
-namespace Actum;
+namespace Actum\Utils;
 
 class Email {
 	//put your code here
