@@ -36,4 +36,9 @@ class EmailTest extends EmailTestCase {
 			.'Actual: '.$actual['description']."\n"
 			.$comment;
 	}
+
+	protected function getExpectedDiagnosis($constantName) {
+		return $this->getHelper()
+			->getConstant($constantName, preg_replace('#Test$#', '', get_class($this)));
+	}
 }

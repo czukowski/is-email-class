@@ -8,7 +8,7 @@
  */
 namespace Actum\Utils;
 
-class EmailTestCase extends \PHPUnit_Framework_TestCase {
+abstract class EmailTestCase extends \PHPUnit_Framework_TestCase {
 
 	private $helper;
 	private $hasInternet;
@@ -22,8 +22,7 @@ class EmailTestCase extends \PHPUnit_Framework_TestCase {
 	}
 
 	private function createTestCase(\SimpleXMLElement $testCase) {
-		$expected = $this->getHelper()
-			->getConstant($testCase->diagnosis, preg_replace('#Test$#', '', get_class($this)));
+		$expected = $this->getExpectedDiagnosis($testCase->diagnosis);
 		if ( ! $this->hasInternet() && $expected <= Email::ISEMAIL_DNSWARN) {
 			$expected = Email::ISEMAIL_VALID;
 		}
@@ -34,6 +33,8 @@ class EmailTestCase extends \PHPUnit_Framework_TestCase {
 			$testCase->comment,
 		);
 	}
+
+	abstract protected function getExpectedDiagnosis($value);
 
 	protected function getHelper() {
 		if ($this->helper === NULL) {
