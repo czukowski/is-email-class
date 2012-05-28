@@ -4,4 +4,5 @@
  * library to a project, use that project's bootstrap for testing
  */
 require_once 'PHPUnit/Autoload.php';
-require_once dirname(__FILE__).'/../classes/Email.php';
+require_once __DIR__.'/../classes/Email.php';
+require_once __DIR__.'/EmailTestHelper.php';
