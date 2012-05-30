@@ -176,13 +176,6 @@ class EmailTestHelper {
 		return $element->{$propertyName} ? (string) $element->{$propertyName} : $default;
 	}
 
-	public function getConstant($constantName, $className = __CLASS__) {
-		if ( ! isset($this->classReflection[$className])) {
-			$this->classReflection[$className] = new \ReflectionClass($className);
-		}
-		return $this->classReflection[$className]->getConstant( (string) $constantName);
-	}
-
 	/**
 	 * Getting test cases from tests XML
 	 * 
