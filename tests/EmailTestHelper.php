@@ -17,6 +17,19 @@ class EmailTestHelper {
 	private $classReflection = array();
 	private $xmlCache = array();
 
+	public function getMessage($email, $expectedCode, $actualCode, $comment) {
+		$actual = $this->getAnalysis($actualCode);
+		$expected = $this->getAnalysis($expectedCode);
+		$result = array(
+			$email,
+			str_repeat('-', mb_strlen($email, 'utf-8')),
+			($expectedCode === NULL ? '' : 'Expected: '.$expected['description']),
+			($actualCode === NULL ? '' : 'Actual: '.$actual['description']),
+			$comment,
+		);
+		return implode("\n", array_filter($result));
+	}
+
 	public function getAnalysis($actual) {
 		return $this->getMetaStatus($this->getMetaConstantName($actual));
 	}

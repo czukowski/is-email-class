@@ -20,7 +20,8 @@ class EmailTest extends EmailTestCase {
 	public function testIsEmail($email, $checkDns, $expected, $unused, $comment) {
 		$actual = Email::is_email($email, $checkDns, TRUE, $parsedata);
 		if ($actual !== $expected) {
-			$comment = $this->getMessage($email, $expected, $actual, $comment);
+			$comment = $this->getHelper()
+				->getMessage($email, $expected, $actual, $comment);
 		}
 		$this->assertEquals($expected, $actual, $comment);
 	}
