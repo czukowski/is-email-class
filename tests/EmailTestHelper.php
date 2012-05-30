@@ -17,6 +17,9 @@ class EmailTestHelper {
 	private $classReflection = array();
 	private $xmlCache = array();
 
+	/**
+	 * Formats message for output
+	 */
 	public function getMessage($email, $expectedCode, $actualCode, $comment) {
 		$actual = $this->getAnalysis($actualCode);
 		$expected = $this->getAnalysis($expectedCode);
@@ -30,10 +33,20 @@ class EmailTestHelper {
 		return implode("\n", array_filter($result));
 	}
 
+	/**
+	 * Returns analysis by its ID (constant name) or numeric value
+	 * 
+	 * @return  array
+	 */
 	public function getAnalysis($actual) {
 		return $this->getMetaStatus($this->getMetaConstantName($actual));
 	}
 
+	/**
+	 * Return analysis ID by its numeric value
+	 * 
+	 * @return  string
+	 */
 	private function getMetaConstantName($actual) {
 		if (is_int($actual)) {
 			$nodes = $this->getXml($this->metaPath)
@@ -48,6 +61,11 @@ class EmailTestHelper {
 		}
 	}
 
+	/**
+	 * Getting Meta data from XML
+	 * 
+	 * @return  array
+	 */
 	private function getMetaStatus($constant) {
 		try {
 			$element = $this->getMetaElement("/meta/*/item[@id = '$constant']");
@@ -65,6 +83,11 @@ class EmailTestHelper {
 		);
 	}
 
+	/**
+	 * Getting Meta Category data from XML
+	 * 
+	 * @return  array 
+	 */
 	private function getMetaCategory($category) {
 		try {
 			$category = $this->getMetaElement("/meta/*/item[@id = '$category']");
@@ -79,6 +102,11 @@ class EmailTestHelper {
 		);
 	}
 
+	/**
+	 * Getting Meta SMTP data from XML
+	 * 
+	 * @return  array 
+	 */
 	private function getMetaSmtp($constant) {
 		try {
 			$smtp = $this->getMetaElement("/meta/*/item[@id = '$constant']");
@@ -93,6 +121,11 @@ class EmailTestHelper {
 		);
 	}
 
+	/**
+	 * Getting Meta References data from XML
+	 * 
+	 * @return  array 
+	 */
 	private function getMetaReferences($references) {
 		$result = array();
 		foreach ($references as $reference) {
@@ -101,6 +134,11 @@ class EmailTestHelper {
 		return $result;
 	}
 
+	/**
+	 * Getting single Meta Reference data from XML
+	 * 
+	 * @return  array 
+	 */
 	private function getMetaReference($name) {
 		try {
 			$reference = $this->getMetaElement("/meta/*/item[@id = '$name']");
@@ -115,6 +153,11 @@ class EmailTestHelper {
 		);
 	}
 
+	/**
+	 * Getting element data from XML using Xpath expression
+	 * 
+	 * @return  \SimpleXMLElement
+	 */
 	private function getMetaElement($query) {
 		$nodes = $this->getXml($this->metaPath)
 			->xpath($query);
@@ -124,6 +167,11 @@ class EmailTestHelper {
 		return $nodes[0];
 	}
 
+	/**
+	 * Getting XML element property
+	 * 
+	 * @return  string
+	 */
 	private function getElementProperty($element, $propertyName, $default = self::ISEMAIL_STRING_UNKNOWN) {
 		return $element->{$propertyName} ? (string) $element->{$propertyName} : $default;
 	}
@@ -135,6 +183,11 @@ class EmailTestHelper {
 		return $this->classReflection[$className]->getConstant( (string) $constantName);
 	}
 
+	/**
+	 * Getting test cases from tests XML
+	 * 
+	 * @return  \SimpleXMLIterator
+	 */
 	public function getTestCases() {
 		return $this->getXml($this->xmlPath)->test;
 	}
