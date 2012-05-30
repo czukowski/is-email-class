@@ -44,7 +44,7 @@ class EmailTestHelper {
 		}
 		return array(
 			'id' => $this->getElementProperty($element->attributes(), 'id'),
-			'value' => $this->getElementProperty($element, 'value'),
+			'value' => (int) $this->getElementProperty($element, 'value'),
 			'description' => $this->getElementProperty($element, 'description'),
 			'category' => $this->getMetaCategory($this->getElementProperty($element, 'category')),
 			'smtp' => $this->getMetaSmtp($this->getElementProperty($element, 'smtp')),
@@ -62,7 +62,7 @@ class EmailTestHelper {
 		return array(
 			'id' => $this->getElementProperty($category->attributes(), 'id'),
 			'description' => $this->getElementProperty($category, 'description'),
-			'value' => $this->getElementProperty($category, 'value'),
+			'value' => (int) $this->getElementProperty($category, 'value'),
 		);
 	}
 
