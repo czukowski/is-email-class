@@ -15,9 +15,12 @@ class EmailTestHelper {
 	private $hasInternet;
 	private $replaceChars;
 	private $searchChars;
-	private $metaPath = '../is_email/test/meta.xml';
-	private $xmlPath = '../is_email/test/tests.xml';
+	private $metaPath;
 	private $xmlCache = array();
+
+	public function __construct($metaXmlPath) {
+		$this->metaPath = $metaXmlPath;
+	}
 
 	/**
 	 * Formats message for output
@@ -181,11 +184,12 @@ class EmailTestHelper {
 	/**
 	 * Getting test cases from tests XML
 	 * 
+	 * @param   string  $relativePath
 	 * @return  \SimpleXMLIterator
 	 */
-	public function getTestCases() {
+	public function getTestCases($relativePath) {
 		$provide = array();
-		foreach ($this->getXml($this->xmlPath)->test as $testCase) {
+		foreach ($this->getXml($relativePath)->test as $testCase) {
 			$provide[ (string) $testCase->attributes()->id] = $this->createTestCase($testCase);
 		}
 		return $provide;
