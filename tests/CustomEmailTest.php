@@ -16,7 +16,7 @@ class CustomEmailTest extends EmailTestCase {
 	 * Returns true if the email address has the email
 	 * address format and the domain exists.
 	 */
-	public function isEmail($email) {
+	public function isEmail($email, $validateDomain = FALSE) {
 		$isValid = true;
 		$atIndex = strrpos($email, "@");
 		if (is_bool($atIndex) && !$atIndex) {
@@ -58,7 +58,7 @@ class CustomEmailTest extends EmailTestCase {
 					$isValid = false;
 				}
 			}
-			if ($isValid && ! (checkdnsrr($domain, 'MX'))) {
+			if ($isValid && $validateDomain && ! (checkdnsrr($domain, 'MX'))) {
 				// domain not found in DNS
 				$isValid = false;
 			}
