@@ -23,10 +23,16 @@ abstract class EmailTestCase extends \PHPUnit_Framework_TestCase {
 		$this->assertEquals($expected, $actual, $comment);
 	}
 
+	/**
+	 * @throws  \LogicException 
+	 */
 	protected function isEmail($email) {
 		throw new \LogicException('Subclasses using the default test must implement their own isEmail method');
 	}
 
+	/**
+	 * Provides test cases from XML files
+	 */
 	public function provideEmails() {
 		$provide = array();
 		foreach ($this->getHelper()->getTestCases() as $testCase) {
@@ -35,6 +41,12 @@ abstract class EmailTestCase extends \PHPUnit_Framework_TestCase {
 		return $provide;
 	}
 
+	/**
+	 * Formats XML element to test case array
+	 * 
+	 * @param   \SimpleXMLElement  $testCase
+	 * @return  array
+	 */
 	private function createTestCase(\SimpleXMLElement $testCase) {
 		$isValid = $this->getExpectedDiagnosis( (string) $testCase->diagnosis);
 		if ( ! $this->hasInternet() && $isValid <= Email::ISEMAIL_DNSWARN) {
