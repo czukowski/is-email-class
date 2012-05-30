@@ -15,6 +15,18 @@ abstract class EmailTestCase extends \PHPUnit_Framework_TestCase {
 	private $replaceChars;
 	private $searchChars;
 
+	/**
+	 * @dataProvider  provideEmails
+	 */
+	public function testIsEmail($email, $checkDns, $unused, $expected, $comment) {
+		$actual = $this->isEmail($email, $checkDns);
+		$this->assertEquals($expected, $actual, $comment);
+	}
+
+	protected function isEmail($email) {
+		throw new \LogicException('Subclasses using the default test must implement their own isEmail method');
+	}
+
 	public function provideEmails() {
 		$provide = array();
 		foreach ($this->getHelper()->getTestCases() as $testCase) {

@@ -11,14 +11,6 @@ namespace Actum\Utils;
 class KohanaEmailTest extends EmailTestCase {
 
 	/**
-	 * @dataProvider  provideEmails
-	 */
-	public function testIsEmail($email, $checkDns, $unused, $expected, $comment) {
-		$actual = $this->isEmail($email, $checkDns);
-		$this->assertEquals($expected, $actual, $comment);
-	}
-
-	/**
 	 * Function based on Kohana 3.1 email validator
 	 * Copyright (c) 2008-2011 Kohana Team
 	 */

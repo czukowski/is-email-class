@@ -11,14 +11,6 @@ namespace Actum\Utils;
 class CustomEmailTest extends EmailTestCase {
 
 	/**
-	 * @dataProvider  provideEmails
-	 */
-	public function testIsEmail($email, $checkDns, $unused, $expected, $comment) {
-		$actual = $this->isEmail($email, $checkDns);
-		$this->assertEquals($expected, $actual, $comment);
-	}
-
-	/**
 	 * Validate an email address.
 	 * Provide email address (raw input)
 	 * Returns true if the email address has the email

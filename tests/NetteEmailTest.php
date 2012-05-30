@@ -11,14 +11,6 @@ namespace Actum\Utils;
 class NetteEmailTest extends EmailTestCase {
 
 	/**
-	 * @dataProvider  provideEmails
-	 */
-	public function testIsEmail($email, $checkDns, $unused, $expected, $comment) {
-		$actual = $this->isEmail($email, $checkDns);
-		$this->assertEquals($expected, $actual, $comment);
-	}
-
-	/**
 	 * Function based on Nette 2 email validator
 	 * Copyright (c) 2004 David Grudl (http://davidgrudl.com)
 	 */
