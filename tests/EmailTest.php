@@ -17,7 +17,7 @@ class EmailTest extends EmailTestCase {
 	/**
 	 * @dataProvider  provideEmails
 	 */
-	public function testIsEmail($email, $checkDns, $expected, $comment) {
+	public function testIsEmail($email, $checkDns, $expected, $unused, $comment) {
 		$actual = Email::is_email($email, $checkDns, TRUE, $parsedata);
 		if ($actual !== $expected) {
 			$comment = $this->getMessage($email, $expected, $actual, $comment);
@@ -35,10 +35,5 @@ class EmailTest extends EmailTestCase {
 			.'Expected: '.$expected['description']."\n"
 			.'Actual: '.$actual['description']."\n"
 			.$comment;
-	}
-
-	protected function getExpectedDiagnosis($constantName) {
-		return $this->getHelper()
-			->getConstant($constantName, preg_replace('#Test$#', '', get_class($this)));
 	}
 }

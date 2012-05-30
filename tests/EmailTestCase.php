@@ -22,19 +22,25 @@ abstract class EmailTestCase extends \PHPUnit_Framework_TestCase {
 	}
 
 	private function createTestCase(\SimpleXMLElement $testCase) {
-		$expected = $this->getExpectedDiagnosis($testCase->diagnosis);
-		if ( ! $this->hasInternet() && $expected <= Email::ISEMAIL_DNSWARN) {
-			$expected = Email::ISEMAIL_VALID;
+		$isValid = $this->getExpectedDiagnosis( (string) $testCase->diagnosis);
+		if ( ! $this->hasInternet() && $isValid <= Email::ISEMAIL_DNSWARN) {
+			$isValid = Email::ISEMAIL_VALID;
 		}
+		$formallyValid = $isValid <= Email::ISEMAIL_RFC5321_IPV6DEPRECATED;
 		return array(
 			(string) $testCase->address,
 			$this->hasInternet(),
-			$expected,
-			$testCase->comment,
+			$isValid,
+			$formallyValid,
+			(string) $testCase->comment,
 		);
 	}
 
-	abstract protected function getExpectedDiagnosis($value);
+	protected function getExpectedDiagnosis($constantName) {
+		$diagnosis = $this->getHelper()
+			->getAnalysis($constantName);
+		return $diagnosis['value'];
+	}
 
 	protected function getHelper() {
 		if ($this->helper === NULL) {
@@ -51,4 +57,24 @@ abstract class EmailTestCase extends \PHPUnit_Framework_TestCase {
 		}
 		return $this->hasInternet;
 	}
+
+    /**
+     * Validates domain accessibility using DNS records check
+     * 
+     * @param   string  $email
+     * @return  boolean
+     */
+    protected function isValidEmailDomain($email) {
+        return (checkdnsrr($this->getEmailDomain($email), 'MX'));
+    }
+
+    /**
+     * Returns domain part fro mthe email address
+     * 
+     * @param   string  $email
+     * @return  string
+     */
+    private function getEmailDomain($email) {
+        return substr($email, strrpos($email, '@') + 1);
+    }
 }
