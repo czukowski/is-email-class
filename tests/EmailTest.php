@@ -24,16 +24,4 @@ class EmailTest extends EmailTestCase {
 		}
 		$this->assertEquals($expected, $actual, $comment);
 	}
-
-	private function getMessage($email, $expected, $actual, $comment) {
-		$actual = $this->getHelper()
-			->getAnalysis($actual);
-		$expected = $this->getHelper()
-			->getAnalysis($expected);
-		return $email."\n"
-			.str_repeat('-', mb_strlen($email, 'utf-8'))."\n"
-			.'Expected: '.$expected['description']."\n"
-			.'Actual: '.$actual['description']."\n"
-			.$comment;
-	}
 }

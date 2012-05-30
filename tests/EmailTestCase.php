@@ -18,9 +18,24 @@ abstract class EmailTestCase extends \PHPUnit_Framework_TestCase {
 	/**
 	 * @dataProvider  provideEmails
 	 */
-	public function testIsEmail($email, $checkDns, $unused, $expected, $comment) {
+	public function testIsEmail($email, $checkDns, $diagnosis, $expected, $comment) {
 		$actual = $this->isEmail($email, $checkDns);
+		if ($actual !== $expected) {
+			$comment = $this->getMessage($email, $diagnosis, NULL, $comment);
+		}
 		$this->assertEquals($expected, $actual, $comment);
+	}
+
+	protected function getMessage($email, $expectedCode, $actualCode, $comment) {
+		$actual = $this->getHelper()
+			->getAnalysis($actualCode);
+		$expected = $this->getHelper()
+			->getAnalysis($expectedCode);
+		return $email
+			."\n".str_repeat('-', mb_strlen($email, 'utf-8'))
+			.($expectedCode === NULL ? '' : "\n".'Expected: '.$expected['description'])
+			.($actualCode === NULL ? '' : "\n".'Actual: '.$actual['description'])
+			.($comment ? "\n" : '').$comment;
 	}
 
 	/**
