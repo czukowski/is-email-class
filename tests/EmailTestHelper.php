@@ -14,7 +14,6 @@ class EmailTestHelper {
 
 	private $metaPath = '../is_email/test/meta.xml';
 	private $xmlPath = '../is_email/test/tests.xml';
-	private $classReflection = array();
 	private $xmlCache = array();
 
 	/**
