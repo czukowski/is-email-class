@@ -29,9 +29,9 @@ class EmailTestHelper {
 		$actual = $this->getAnalysis($actualCode);
 		$expected = $this->getAnalysis($expectedCode);
 		$result = array(
-			$email,
+			str_replace(array("\n", "\r", "\t"), array('↓', '↓', '→'), $email),
 			str_repeat('-', mb_strlen($email, 'utf-8')),
-			($expectedCode === NULL ? '' : 'Expected: '.$expected['description']),
+			($expectedCode === NULL ? '' : 'Expected: '.$expected['description'].' ('.$expected['id'].')'),
 			($actualCode === NULL ? '' : 'Actual: '.$actual['description']),
 			$comment,
 		);
