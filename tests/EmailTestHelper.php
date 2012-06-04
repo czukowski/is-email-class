@@ -32,7 +32,7 @@ class EmailTestHelper {
 			str_replace(array("\n", "\r", "\t"), array('↓', '↓', '→'), $email),
 			str_repeat('-', mb_strlen($email, 'utf-8')),
 			($expectedCode === NULL ? '' : 'Expected: '.$expected['description'].' ('.$expected['id'].')'),
-			($actualCode === NULL ? '' : 'Actual: '.$actual['description']),
+			($actualCode === NULL ? '' : 'Actual: '.$actual['description'].' ('.$actual['id'].')'),
 			$comment,
 		);
 		return implode("\n", array_filter($result));
