@@ -14,7 +14,7 @@ class EmailTest extends EmailTestCase {
 	 * @dataProvider  provideEmails
 	 */
 	public function testIsEmail($email, $checkDns, $expected, $unused, $comment) {
-		$actual = Email::is_email($email, $checkDns, TRUE, $parsedata);
+		$actual = Email::is_email($email, $checkDns, TRUE);
 		if ($actual !== $expected) {
 			$comment = $this->getHelper()
 				->getMessage($email, $expected, $actual, $comment);
