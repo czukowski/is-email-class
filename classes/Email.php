@@ -3,6 +3,7 @@
  * Email class
  *
  * @package  Email
+ * @author   Dominic Sayers <dominic@sayers.cc>
  * @author   Korney Czukowski
  * @license  BSD License
  */
