@@ -184,12 +184,12 @@ class EmailTestHelper {
 	/**
 	 * Getting test cases from tests XML
 	 * 
-	 * @param   string  $relativePath
+	 * @param   string  $xmlPath
 	 * @return  \SimpleXMLIterator
 	 */
-	public function getTestCases($relativePath) {
+	public function getTestCases($xmlPath) {
 		$provide = array();
-		foreach ($this->getXml($relativePath)->test as $testCase) {
+		foreach ($this->getXml($xmlPath)->test as $testCase) {
 			$provide[ (string) $testCase->attributes()->id] = $this->createTestCase($testCase);
 		}
 		return $provide;
@@ -198,14 +198,14 @@ class EmailTestHelper {
 	/**
 	 * @return  \SimpleXMLElement
 	 */
-	private function getXml($relativePath) {
-		if ( ! isset($this->xmlCache[$relativePath])) {
-			$this->xmlCache[$relativePath] = simplexml_load_file(realpath(__DIR__.'/'.$relativePath));
-			if ( ! $this->xmlCache[$relativePath] instanceof \SimpleXMLElement) {
+	public function getXml($xmlPath) {
+		if ( ! isset($this->xmlCache[$xmlPath])) {
+			$this->xmlCache[$xmlPath] = simplexml_load_file($xmlPath);
+			if ( ! $this->xmlCache[$xmlPath] instanceof \SimpleXMLElement) {
 				throw new \Exception('XML load error');
 			}
 		}
-		return $this->xmlCache[$relativePath];
+		return $this->xmlCache[$xmlPath];
 	}
 
 	/**

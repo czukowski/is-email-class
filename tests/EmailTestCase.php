@@ -36,7 +36,7 @@ abstract class EmailTestCase extends \PHPUnit_Framework_TestCase {
 	 */
 	public function provideEmails() {
 		return $this->getHelper()
-			->getTestCases('xml/tests.xml');
+			->getTestCases($this->getXmlPath('tests'));
 	}
 
 	/**
@@ -44,7 +44,7 @@ abstract class EmailTestCase extends \PHPUnit_Framework_TestCase {
 	 */
 	protected function getHelper() {
 		if ($this->helper === NULL) {
-			$this->helper = new EmailTestHelper('xml/meta.xml');
+			$this->helper = new EmailTestHelper($this->getXmlPath('meta'));
 		}
 		return $this->helper;
 	}
@@ -68,4 +68,12 @@ abstract class EmailTestCase extends \PHPUnit_Framework_TestCase {
     private function getEmailDomain($email) {
         return substr($email, strrpos($email, '@') + 1);
     }
+
+	/**
+	 * @param   string  $file
+	 * @return  string
+	 */
+	private function getXmlPath($file) {
+		return realpath(__DIR__.'/xml/'.$file.'.xml');
+	}
 }
