@@ -23,7 +23,7 @@ class EmailMetaXml extends EmailXml {
 	 * @return  array
 	 */
 	public function getAnalysis($diagnosis) {
-		return $this->getMetaStatus($this->getMetaConstantName($diagnosis));
+		return $this->getStatus($this->getConstantName($diagnosis));
 	}
 
 	/**
@@ -32,7 +32,7 @@ class EmailMetaXml extends EmailXml {
 	 * @param   mixed  $diagnosis
 	 * @return  string
 	 */
-	private function getMetaConstantName($diagnosis) {
+	private function getConstantName($diagnosis) {
 		if (is_int($diagnosis)) {
 			$nodes = $this->xml->xpath("/meta/*/item/value[. = '$diagnosis']/../@id");
 			return (count($nodes) === 0) ? self::ISEMAIL_STRING_UNKNOWN : (string) $nodes[0]->id;
@@ -50,9 +50,9 @@ class EmailMetaXml extends EmailXml {
 	 * 
 	 * @return  array
 	 */
-	private function getMetaStatus($constant) {
+	private function getStatus($constant) {
 		try {
-			$element = $this->getMetaElement("/meta/*/item[@id = '$constant']");
+			$element = $this->getElement("/meta/*/item[@id = '$constant']");
 		}
 		catch (\OutOfBoundsException $e) {
 			return self::ISEMAIL_STRING_UNKNOWN;
@@ -61,9 +61,9 @@ class EmailMetaXml extends EmailXml {
 			'id' => $this->getElementProperty($element->attributes(), 'id'),
 			'value' => (int) $this->getElementProperty($element, 'value'),
 			'description' => $this->getElementProperty($element, 'description'),
-			'category' => $this->getMetaCategory($this->getElementProperty($element, 'category')),
-			'smtp' => $this->getMetaSmtp($this->getElementProperty($element, 'smtp')),
-			'reference' => $this->getMetaReferences($element->reference),
+			'category' => $this->getCategory($this->getElementProperty($element, 'category')),
+			'smtp' => $this->getSmtp($this->getElementProperty($element, 'smtp')),
+			'reference' => $this->getReferences($element->reference),
 		);
 	}
 
@@ -72,9 +72,9 @@ class EmailMetaXml extends EmailXml {
 	 * 
 	 * @return  array 
 	 */
-	private function getMetaCategory($category) {
+	private function getCategory($category) {
 		try {
-			$category = $this->getMetaElement("/meta/*/item[@id = '$category']");
+			$category = $this->getElement("/meta/*/item[@id = '$category']");
 		}
 		catch (\OutOfBoundsException $e) {
 			return self::ISEMAIL_STRING_UNKNOWN;
@@ -91,9 +91,9 @@ class EmailMetaXml extends EmailXml {
 	 * 
 	 * @return  array 
 	 */
-	private function getMetaSmtp($constant) {
+	private function getSmtp($constant) {
 		try {
-			$smtp = $this->getMetaElement("/meta/*/item[@id = '$constant']");
+			$smtp = $this->getElement("/meta/*/item[@id = '$constant']");
 		}
 		catch (\OutOfBoundsException $e) {
 			return self::ISEMAIL_STRING_UNKNOWN;
@@ -110,10 +110,10 @@ class EmailMetaXml extends EmailXml {
 	 * 
 	 * @return  array 
 	 */
-	private function getMetaReferences($references) {
+	private function getReferences($references) {
 		$result = array();
 		foreach ($references as $reference) {
-			$result[] = $this->getMetaReference($reference);
+			$result[] = $this->getReference($reference);
 		}
 		return $result;
 	}
@@ -123,9 +123,9 @@ class EmailMetaXml extends EmailXml {
 	 * 
 	 * @return  array 
 	 */
-	private function getMetaReference($name) {
+	private function getReference($name) {
 		try {
-			$reference = $this->getMetaElement("/meta/*/item[@id = '$name']");
+			$reference = $this->getElement("/meta/*/item[@id = '$name']");
 		}
 		catch (\OutOfBoundsException $e) {
 			return self::ISEMAIL_STRING_UNKNOWN;
@@ -142,7 +142,7 @@ class EmailMetaXml extends EmailXml {
 	 * 
 	 * @return  \SimpleXMLElement
 	 */
-	private function getMetaElement($query) {
+	private function getElement($query) {
 		$nodes = $this->xml->xpath($query);
 		if ( ! count($nodes)) {
 			throw new \OutOfBoundsException;
