@@ -24,4 +24,11 @@ class EmailXml {
 			throw new \Exception('XML load error');
 		}
 	}
+
+	/**
+	 * @return  \SimpleXMLElement
+	 */
+	public function getRoot() {
+		return $this->xml;
+	}
 }
