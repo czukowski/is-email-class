@@ -10,7 +10,8 @@
 namespace Actum\Utils;
 
 class Email {
-	// This part of the code is generated using data from test/meta.xml. Beware of making manual alterations
+	// The following part of the code is generated using data from tests/meta.xml.
+	// Beware of making manual alterations!
 	// Categories
 	const ISEMAIL_VALID_CATEGORY = 1;
 	const ISEMAIL_DNSWARN = 7;
