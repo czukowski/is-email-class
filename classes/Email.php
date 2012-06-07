@@ -83,7 +83,7 @@ class Email {
 	const ISEMAIL_ERR_CR_NO_LF = 150;
 	// End of generated code
 
-	// function control
+	// Function control
 	const ISEMAIL_THRESHOLD =  16;
 
 	// Email parts
