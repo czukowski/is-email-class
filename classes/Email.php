@@ -124,7 +124,7 @@ class Email {
 	const ISEMAIL_STRING_SPECIALS =  '()<>[]:;@\\,."';
 
 	/**
-	 * @var  string
+	 * @var  string  Source email address
 	 */
 	private $email;
 	/**
@@ -132,7 +132,7 @@ class Email {
 	 */
 	private $return_status = array(self::ISEMAIL_VALID);
 	/**
-	 * @var  integer
+	 * @var  integer  The max error level reached, also indicates that the parse has already happened
 	 */
 	private $final_status;
 	/**
@@ -209,7 +209,9 @@ class Email {
 	}
 
 	/**
-	 * @param  boolean  $checkDNS 
+	 * Parse email address
+	 * 
+	 * @param  boolean  $checkDNS
 	 */
 	public function parse($checkDNS) {
 		for ($this->pointer = 0; $this->pointer < $this->raw_length; $this->pointer++) {
@@ -1350,6 +1352,11 @@ class Email {
 		}
 	}
 
+	/**
+	 * Returns the final parse status
+	 * 
+	 * @return  integer
+	 */
 	public function status() {
 		return $this->final_status;
 	}
