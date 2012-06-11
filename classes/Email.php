@@ -320,47 +320,7 @@ class Email {
 		if ($checkDNS) {
 			$this->check_dns();
 		}
-
-		// Check for TLD addresses
-		// -----------------------
-		// TLD addresses are specifically allowed in RFC 5321 but they are
-		// unusual to say the least. We will allocate a separate
-		// status to these addresses on the basis that they are more likely
-		// to be typos than genuine addresses (unless we've already
-		// established that the domain does have an MX record)
-		// 
-		// http://tools.ietf.org/html/rfc5321#section-2.3.5
-		//   In the case
-		//   of a top-level domain used by itself in an email address, a single
-		//   string is used without any dots.  This makes the requirement,
-		//   described in more detail below, that only fully-qualified domain
-		//   names appear in SMTP transactions on the public Internet,
-		//   particularly important where top-level domains are involved.
-		// 
-		// TLD format
-		// ----------
-		// The format of TLDs has changed a number of times. The standards
-		// used by IANA have been largely ignored by ICANN, leading to
-		// confusion over the standards being followed. These are not defined
-		// anywhere, except as a general component of a DNS host name (a label).
-		// However, this could potentially lead to 123.123.123.123 being a
-		// valid DNS name (rather than an IP address) and thereby creating
-		// an ambiguity. The most authoritative statement on TLD formats that
-		// the author can find is in a (rejected!) erratum to RFC 1123
-		// submitted by John Klensin, the author of RFC 5321:
-		// 
-		// http://www.rfc-editor.org/errata_search.php?rfc=1123&eid=1353
-		//   However, a valid host name can never have the dotted-decimal
-		//   form #.#.#.#, since this change does not permit the highest-level
-		//   component label to start with a digit even if it is not all-numeric.
-		if ( ! $this->dns_checked && ( (int) max($this->return_status) < self::ISEMAIL_DNSWARN)) {
-			if ($this->element_count === 0) {
-				$this->return_status[] = self::ISEMAIL_RFC5321_TLD;
-			}
-			if (is_numeric($this->atomlist[self::ISEMAIL_COMPONENT_DOMAIN][$this->element_count][0])) {
-				$this->return_status[] = self::ISEMAIL_RFC5321_TLDNUMERIC;
-			}
-		}
+		$this->check_tld_address();
 
 		$this->return_status = array_unique($this->return_status);
 		$this->final_status = (int) max($this->return_status);
@@ -1309,6 +1269,49 @@ class Email {
 				else {
 					$this->dns_checked = TRUE;
 				}
+			}
+		}
+	}
+
+	private function check_tld_address() {
+		// Check for TLD addresses
+		// -----------------------
+		// TLD addresses are specifically allowed in RFC 5321 but they are
+		// unusual to say the least. We will allocate a separate
+		// status to these addresses on the basis that they are more likely
+		// to be typos than genuine addresses (unless we've already
+		// established that the domain does have an MX record)
+		// 
+		// http://tools.ietf.org/html/rfc5321#section-2.3.5
+		//   In the case
+		//   of a top-level domain used by itself in an email address, a single
+		//   string is used without any dots.  This makes the requirement,
+		//   described in more detail below, that only fully-qualified domain
+		//   names appear in SMTP transactions on the public Internet,
+		//   particularly important where top-level domains are involved.
+		// 
+		// TLD format
+		// ----------
+		// The format of TLDs has changed a number of times. The standards
+		// used by IANA have been largely ignored by ICANN, leading to
+		// confusion over the standards being followed. These are not defined
+		// anywhere, except as a general component of a DNS host name (a label).
+		// However, this could potentially lead to 123.123.123.123 being a
+		// valid DNS name (rather than an IP address) and thereby creating
+		// an ambiguity. The most authoritative statement on TLD formats that
+		// the author can find is in a (rejected!) erratum to RFC 1123
+		// submitted by John Klensin, the author of RFC 5321:
+		// 
+		// http://www.rfc-editor.org/errata_search.php?rfc=1123&eid=1353
+		//   However, a valid host name can never have the dotted-decimal
+		//   form #.#.#.#, since this change does not permit the highest-level
+		//   component label to start with a digit even if it is not all-numeric.
+		if ( ! $this->dns_checked && ( (int) max($this->return_status) < self::ISEMAIL_DNSWARN)) {
+			if ($this->element_count === 0) {
+				$this->return_status[] = self::ISEMAIL_RFC5321_TLD;
+			}
+			if (is_numeric($this->atomlist[self::ISEMAIL_COMPONENT_DOMAIN][$this->element_count][0])) {
+				$this->return_status[] = self::ISEMAIL_RFC5321_TLDNUMERIC;
 			}
 		}
 	}
