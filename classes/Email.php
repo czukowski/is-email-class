@@ -204,10 +204,8 @@ class Email {
 	 * @param  boolean  $checkDNS 
 	 */
 	public function parse($checkDNS) {
-	//-echo "<table style=\"clear:left;\">"; // debug
 		for ($this->pointer = 0; $this->pointer < $this->raw_length; $this->pointer++) {
 			$this->token = $this->email[$this->pointer];
-	//-echo "<tr><td><strong>$context|",(($end_or_die) ? 'true' : 'false'),"|$token|" . max($return_status) . "</strong></td>"; // debug
 
 			switch ($this->context) {
 				case self::ISEMAIL_COMPONENT_LOCALPART:
@@ -243,7 +241,6 @@ class Email {
 					throw new \UndefinedValueException("Unknown context: $this->context");
 			}
 
-	//-echo "<td>$context|",(($end_or_die) ? 'true' : 'false'),"|$token|" . max($return_status) . "</td></tr>"; // debug
 			if ( (int) max($this->return_status) > self::ISEMAIL_RFC5322) {
 				// No point going on if we've got a fatal error
 				break;
