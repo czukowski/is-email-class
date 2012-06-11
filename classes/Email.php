@@ -183,6 +183,10 @@ class Email {
 	 * @var  boolean  CFWS can only appear at the end of the element
 	 */
 	private $end_or_die;
+	/**
+	 * @var  boolean
+	 */
+	private $dns_checked = FALSE;
 
 	public function __construct($email) {
 		$this->email = $email;
@@ -326,53 +330,8 @@ class Email {
 		}
 
 		// Check DNS?
-		$dns_checked = FALSE;
-
-		if ($checkDNS && ( (int) max($this->return_status) < self::ISEMAIL_DNSWARN) && function_exists('dns_get_record')) {
-			// http://tools.ietf.org/html/rfc5321#section-2.3.5
-			//   Names that can
-			//   be resolved to MX RRs or address (i.e., A or AAAA) RRs (as discussed
-			//   in Section 5) are permitted, as are CNAME RRs whose targets can be
-			//   resolved, in turn, to MX or address RRs.
-			// 
-			// http://tools.ietf.org/html/rfc5321#section-5.1
-			//   The lookup first attempts to locate an MX record associated with the
-			//   name.  If a CNAME record is found, the resulting name is processed as
-			//   if it were the initial name. ... If an empty list of MXs is returned,
-			//   the address is treated as if it was associated with an implicit MX
-			//   RR, with a preference of 0, pointing to that host.
-			// 
-			// is_email() author's note: We will regard the existence of a CNAME to be
-			// sufficient evidence of the domain's existence. For performance reasons
-			// we will not repeat the DNS lookup for the CNAME's target, but we will
-			// raise a warning because we didn't immediately find an MX record.
-			if ($this->element_count === 0) {
-				// Checking TLD DNS seems to work only if you explicitly check from the root
-				$this->parsedata[self::ISEMAIL_COMPONENT_DOMAIN] .= '.';
-			}
-
-			// Not using checkdnsrr because of a suspected bug in PHP 5.3 (http://bugs.php.net/bug.php?id=51844)
-			$result = @dns_get_record($this->parsedata[self::ISEMAIL_COMPONENT_DOMAIN], DNS_MX);
-
-			if ((is_bool($result) && ! (bool) $result)) {
-				// Domain can't be found in DNS
-				$this->return_status[] = self::ISEMAIL_DNSWARN_NO_RECORD;
-			}
-			else {
-				if (count($result) === 0) {
-					// MX-record for domain can't be found
-					$this->return_status[] = self::ISEMAIL_DNSWARN_NO_MX_RECORD;
-					$result = @dns_get_record($this->parsedata[self::ISEMAIL_COMPONENT_DOMAIN], DNS_A + DNS_CNAME);
-
-					if (count($result) === 0) {
-						// No usable records for the domain can be found
-						$this->return_status[] = self::ISEMAIL_DNSWARN_NO_RECORD;
-					}
-				}
-				else {
-					$dns_checked = TRUE;
-				}
-			}
+		if ($checkDNS) {
+			$this->check_dns();
 		}
 
 		// Check for TLD addresses
@@ -407,7 +366,7 @@ class Email {
 		//   However, a valid host name can never have the dotted-decimal
 		//   form #.#.#.#, since this change does not permit the highest-level
 		//   component label to start with a digit even if it is not all-numeric.
-		if ( ! $dns_checked && ( (int) max($this->return_status) < self::ISEMAIL_DNSWARN)) {
+		if ( ! $this->dns_checked && ( (int) max($this->return_status) < self::ISEMAIL_DNSWARN)) {
 			if ($this->element_count === 0) {
 				$this->return_status[] = self::ISEMAIL_RFC5321_TLD;
 			}
@@ -1316,6 +1275,55 @@ class Email {
 		}
 
 		$this->token_prior = $this->token;
+	}
+
+	private function check_dns() {
+		if (( (int) max($this->return_status) < self::ISEMAIL_DNSWARN) && function_exists('dns_get_record')) {
+			// http://tools.ietf.org/html/rfc5321#section-2.3.5
+			//   Names that can
+			//   be resolved to MX RRs or address (i.e., A or AAAA) RRs (as discussed
+			//   in Section 5) are permitted, as are CNAME RRs whose targets can be
+			//   resolved, in turn, to MX or address RRs.
+			// 
+			// http://tools.ietf.org/html/rfc5321#section-5.1
+			//   The lookup first attempts to locate an MX record associated with the
+			//   name.  If a CNAME record is found, the resulting name is processed as
+			//   if it were the initial name. ... If an empty list of MXs is returned,
+			//   the address is treated as if it was associated with an implicit MX
+			//   RR, with a preference of 0, pointing to that host.
+			// 
+			// is_email() author's note: We will regard the existence of a CNAME to be
+			// sufficient evidence of the domain's existence. For performance reasons
+			// we will not repeat the DNS lookup for the CNAME's target, but we will
+			// raise a warning because we didn't immediately find an MX record.
+			if ($this->element_count === 0) {
+				// Checking TLD DNS seems to work only if you explicitly check from the root
+				$this->parsedata[self::ISEMAIL_COMPONENT_DOMAIN] .= '.';
+			}
+
+			// Not using checkdnsrr because of a suspected bug in PHP 5.3 (http://bugs.php.net/bug.php?id=51844)
+			$result = @dns_get_record($this->parsedata[self::ISEMAIL_COMPONENT_DOMAIN], DNS_MX);
+
+			if ((is_bool($result) && ! (bool) $result)) {
+				// Domain can't be found in DNS
+				$this->return_status[] = self::ISEMAIL_DNSWARN_NO_RECORD;
+			}
+			else {
+				if (count($result) === 0) {
+					// MX-record for domain can't be found
+					$this->return_status[] = self::ISEMAIL_DNSWARN_NO_MX_RECORD;
+					$result = @dns_get_record($this->parsedata[self::ISEMAIL_COMPONENT_DOMAIN], DNS_A + DNS_CNAME);
+
+					if (count($result) === 0) {
+						// No usable records for the domain can be found
+						$this->return_status[] = self::ISEMAIL_DNSWARN_NO_RECORD;
+					}
+				}
+				else {
+					$this->dns_checked = TRUE;
+				}
+			}
+		}
 	}
 
 	public function status() {
