@@ -213,7 +213,7 @@ class Email {
 	 * 
 	 * @param  boolean  $checkDNS
 	 */
-	public function parse($checkDNS) {
+	private function parse($checkDNS) {
 		for ($this->pointer = 0; $this->pointer < $this->raw_length; $this->pointer++) {
 			$this->token = $this->email[$this->pointer];
 
