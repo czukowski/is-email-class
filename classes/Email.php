@@ -1,7 +1,15 @@
 <?php
 /**
  * Email class
- *
+ * 
+ * Checks that email is a valid address. Read the following RFCs to understand the constraints:
+ * 
+ *   - http://tools.ietf.org/html/rfc5321
+ *   - http://tools.ietf.org/html/rfc5322
+ *   - http://tools.ietf.org/html/rfc4291#section-2.2
+ *   - http://tools.ietf.org/html/rfc1123#section-2.1
+ *   - http://tools.ietf.org/html/rfc3696 (guidance only)
+ * 
  * @package  Email
  * @author   Dominic Sayers <dominic@sayers.cc>
  * @author   Korney Czukowski
@@ -1373,12 +1381,6 @@ class Email {
 	 * @param array    $parsedata   If passed, returns the parsed address components
 	 */
 	public static function is_email($email, $checkDNS = FALSE, $errorlevel = FALSE) {
-		// Check that $email is a valid address. Read the following RFCs to understand the constraints:
-		//  (http://tools.ietf.org/html/rfc5321)
-		//  (http://tools.ietf.org/html/rfc5322)
-		//  (http://tools.ietf.org/html/rfc4291#section-2.2)
-		//  (http://tools.ietf.org/html/rfc1123#section-2.1)
-		//  (http://tools.ietf.org/html/rfc3696) (guidance only)
 		// version 2.0: Enhance $diagnose parameter to $errorlevel
 		// version 3.0: Introduced status categories
 		// revision 3.1: BUG: $parsedata was passed by value instead of by reference
