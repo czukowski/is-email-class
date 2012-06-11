@@ -248,7 +248,7 @@ class Email {
 					break;
 				default:
 					// A context we aren't expecting
-					throw new \UndefinedValueException("Unknown context: $this->context");
+					throw new \UnexpectedValueException("Unknown context: $this->context");
 			}
 
 			if ( (int) max($this->return_status) > self::ISEMAIL_RFC5322) {
@@ -440,7 +440,7 @@ class Email {
 				// @
 				// At this point we should have a valid local-part
 				if (count($this->context_stack) !== 1) {
-					throw new \UndefinedValueException('Unexpected item on context stack');
+					throw new \UnexpectedValueException('Unexpected item on context stack');
 				}
 
 				if ($this->parsedata[self::ISEMAIL_COMPONENT_LOCALPART] === '') {
@@ -505,7 +505,7 @@ class Email {
 							$this->return_status[] = self::ISEMAIL_ERR_ATEXT_AFTER_QS;
 							break;
 						default:
-							throw new \UndefinedValueException("More atext found where none is allowed, but unrecognised prior context: $this->context_prior");
+							throw new \UnexpectedValueException("More atext found where none is allowed, but unrecognised prior context: $this->context_prior");
 					}
 				}
 				else {
@@ -691,7 +691,7 @@ class Email {
 							$this->return_status[] = self::ISEMAIL_ERR_ATEXT_AFTER_DOMLIT;
 							break;
 						default:
-							throw new \UndefinedValueException("More atext found where none is allowed, but unrecognised prior context: $this->context_prior");
+							throw new \UnexpectedValueException("More atext found where none is allowed, but unrecognised prior context: $this->context_prior");
 					}
 				}
 
@@ -1075,7 +1075,7 @@ class Email {
 				$this->element_len += 2;
 				break;
 			default:
-				throw new \UndefinedValueException("Quoted pair logic invoked in an invalid context: $this->context");
+				throw new \UnexpectedValueException("Quoted pair logic invoked in an invalid context: $this->context");
 		}
 	}
 
