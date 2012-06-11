@@ -122,7 +122,7 @@ class Email {
 	/**
 	 * @var  array
 	 */
-	private $return_status;
+	private $return_status = array(self::ISEMAIL_VALID);
 	/**
 	 * @var  integer
 	 */
@@ -138,7 +138,7 @@ class Email {
 	/**
 	 * @var  integer  Where we are
 	 */
-	private $context;
+	private $context = self::ISEMAIL_COMPONENT_LOCALPART;
 	/**
 	 * @var  integer  Where we have been
 	 */
@@ -146,11 +146,11 @@ class Email {
 	/**
 	 * @var  integer  Where we just came from
 	 */
-	private $context_prior;
+	private $context_prior = self::ISEMAIL_COMPONENT_LOCALPART;
 	/**
 	 * @var  char  The current character
 	 */
-	private $token;
+	private $token = '';
 	/**
 	 * @var  integer  Current token index
 	 */
@@ -158,31 +158,37 @@ class Email {
 	/**
 	 * @var  char  The previous character
 	 */
-	private $token_prior;
+	private $token_prior = '';
 	/**
 	 * @var  array  For the components of the address
 	 */
-	private $parsedata;
+	private $parsedata = array(
+		self::ISEMAIL_COMPONENT_LOCALPART => '',
+		self::ISEMAIL_COMPONENT_DOMAIN => '',
+	);
 	/**
 	 * @var  array  For the dot-atom elements of the address
 	 */
-	private $atomlist;
+	private $atomlist = array(
+		self::ISEMAIL_COMPONENT_LOCALPART => array(''),
+		self::ISEMAIL_COMPONENT_DOMAIN => array(''),
+	);
 	/**
 	 * @var  integer
 	 */
-	private $element_count;
+	private $element_count = 0;
 	/**
 	 * @var  integer
 	 */
-	private $element_len;
+	private $element_len = 0;
 	/**
 	 * @var  boolean  Hyphen cannot occur at the end of a subdomain
 	 */
-	private $hyphen_flag;
+	private $hyphen_flag = FALSE;
 	/**
 	 * @var  boolean  CFWS can only appear at the end of the element
 	 */
-	private $end_or_die;
+	private $end_or_die = FALSE;
 	/**
 	 * @var  boolean
 	 */
@@ -190,33 +196,14 @@ class Email {
 
 	public function __construct($email) {
 		$this->email = $email;
+		$this->raw_length = strlen($this->email);
+		$this->context_stack = array($this->context);
 	}
 
 	/**
 	 * @param  boolean  $checkDNS 
 	 */
 	public function parse($checkDNS) {
-		$this->return_status = array(self::ISEMAIL_VALID);
-
-		$this->raw_length = strlen($this->email);
-		$this->context = self::ISEMAIL_COMPONENT_LOCALPART;
-		$this->context_stack = array($this->context);
-		$this->context_prior = self::ISEMAIL_COMPONENT_LOCALPART;
-		$this->token = '';
-		$this->token_prior = '';
-		$this->parsedata = array(
-			self::ISEMAIL_COMPONENT_LOCALPART => '',
-			self::ISEMAIL_COMPONENT_DOMAIN => '',
-		);
-		$this->atomlist = array(
-			self::ISEMAIL_COMPONENT_LOCALPART => array(''),
-			self::ISEMAIL_COMPONENT_DOMAIN => array(''),
-		);
-		$this->element_count = 0;
-		$this->element_len = 0;
-		$this->hyphen_flag = FALSE;
-		$this->end_or_die = FALSE;
-
 	//-echo "<table style=\"clear:left;\">"; // debug
 		for ($this->pointer = 0; $this->pointer < $this->raw_length; $this->pointer++) {
 			$this->token = $this->email[$this->pointer];
