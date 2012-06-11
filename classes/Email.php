@@ -1381,10 +1381,6 @@ class Email {
 	 * @param array    $parsedata   If passed, returns the parsed address components
 	 */
 	public static function is_email($email, $checkDNS = FALSE, $errorlevel = FALSE) {
-		// version 2.0: Enhance $diagnose parameter to $errorlevel
-		// version 3.0: Introduced status categories
-		// revision 3.1: BUG: $parsedata was passed by value instead of by reference
-
 		if (is_bool($errorlevel)) {
 			$threshold = self::ISEMAIL_VALID;
 			$diagnose = (bool) $errorlevel;
