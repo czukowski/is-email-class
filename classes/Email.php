@@ -1253,7 +1253,7 @@ class Email {
 				//   labels          63 octets or less
 				$this->return_status[] = self::ISEMAIL_RFC5322_LABEL_TOOLONG;
 			}
-		}		
+		}
 	}
 
 	/**
