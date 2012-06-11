@@ -257,71 +257,7 @@ class Email {
 			}
 		}
 
-		// Some simple final tests
-		if ( (int) max($this->return_status) < self::ISEMAIL_RFC5322) {
-			if ($this->context === self::ISEMAIL_CONTEXT_QUOTEDSTRING) {
-				// Fatal error
-				$this->return_status[] = self::ISEMAIL_ERR_UNCLOSEDQUOTEDSTR;
-			}
-			elseif ($this->context === self::ISEMAIL_CONTEXT_QUOTEDPAIR) {
-				// Fatal error
-				$this->return_status[] = self::ISEMAIL_ERR_BACKSLASHEND;
-			}
-			elseif ($this->context === self::ISEMAIL_CONTEXT_COMMENT) {
-				// Fatal error
-				$this->return_status[] = self::ISEMAIL_ERR_UNCLOSEDCOMMENT;
-			}
-			elseif ($this->context === self::ISEMAIL_COMPONENT_LITERAL) {
-				// Fatal error
-				$this->return_status[] = self::ISEMAIL_ERR_UNCLOSEDDOMLIT;
-			}
-			elseif ($this->token === self::ISEMAIL_STRING_CR) {
-				// Fatal error
-				$this->return_status[] = self::ISEMAIL_ERR_FWS_CRLF_END;
-			}
-			elseif ($this->parsedata[self::ISEMAIL_COMPONENT_DOMAIN] === '') {
-				// Fatal error
-				$this->return_status[] = self::ISEMAIL_ERR_NODOMAIN;
-			}
-			elseif ($this->element_len === 0) {
-				// Fatal error
-				$this->return_status[] = self::ISEMAIL_ERR_DOT_END;
-			}
-			elseif ($this->hyphen_flag) {
-				$this->return_status[] = self::ISEMAIL_ERR_DOMAINHYPHENEND;
-			}
-			elseif (strlen($this->parsedata[self::ISEMAIL_COMPONENT_DOMAIN]) > 255) {
-				// http://tools.ietf.org/html/rfc5321#section-4.5.3.1.2
-				//   The maximum total length of a domain name or number is 255 octets.
-				$this->return_status[] = self::ISEMAIL_RFC5322_DOMAIN_TOOLONG;
-			}
-			elseif (strlen($this->parsedata[self::ISEMAIL_COMPONENT_LOCALPART].self::ISEMAIL_STRING_AT.$this->parsedata[self::ISEMAIL_COMPONENT_DOMAIN]) > 254) {
-				// http://tools.ietf.org/html/rfc5321#section-4.1.2
-				//   Forward-path   = Path
-				// 
-				//   Path           = "<" [ A-d-l ":" ] Mailbox ">"
-				//
-				// http://tools.ietf.org/html/rfc5321#section-4.5.3.1.3
-				//   The maximum total length of a reverse-path or forward-path is 256
-				//   octets (including the punctuation and element separators).
-				// 
-				// Thus, even without (obsolete) routing information, the Mailbox can
-				// only be 254 characters long. This is confirmed by this verified
-				// erratum to RFC 3696:
-				// 
-				// http://www.rfc-editor.org/errata_search.php?rfc=3696&eid=1690
-				//   However, there is a restriction in RFC 2821 on the length of an
-				//   address in MAIL and RCPT commands of 254 characters.  Since addresses
-				//   that do not fit in those fields are not normally useful, the upper
-				//   limit on address lengths should normally be considered to be 254.
-				$this->return_status[] = self::ISEMAIL_RFC5322_TOOLONG;
-			}
-			elseif ($this->element_len > 63) {
-				// http://tools.ietf.org/html/rfc1035#section-2.3.4
-				//   labels          63 octets or less
-				$this->return_status[] = self::ISEMAIL_RFC5322_LABEL_TOOLONG;
-			}
-		}
+		$this->evaluate_syntax_results();
 
 		// Check DNS?
 		if ($checkDNS) {
@@ -1248,6 +1184,76 @@ class Email {
 		}
 
 		$this->token_prior = $this->token;
+	}
+
+	/**
+	 * Some simple final tests to evaluate results of address syntax validation
+	 */
+	private function evaluate_syntax_results() {
+		if ( (int) max($this->return_status) < self::ISEMAIL_RFC5322) {
+			if ($this->context === self::ISEMAIL_CONTEXT_QUOTEDSTRING) {
+				// Fatal error
+				$this->return_status[] = self::ISEMAIL_ERR_UNCLOSEDQUOTEDSTR;
+			}
+			elseif ($this->context === self::ISEMAIL_CONTEXT_QUOTEDPAIR) {
+				// Fatal error
+				$this->return_status[] = self::ISEMAIL_ERR_BACKSLASHEND;
+			}
+			elseif ($this->context === self::ISEMAIL_CONTEXT_COMMENT) {
+				// Fatal error
+				$this->return_status[] = self::ISEMAIL_ERR_UNCLOSEDCOMMENT;
+			}
+			elseif ($this->context === self::ISEMAIL_COMPONENT_LITERAL) {
+				// Fatal error
+				$this->return_status[] = self::ISEMAIL_ERR_UNCLOSEDDOMLIT;
+			}
+			elseif ($this->token === self::ISEMAIL_STRING_CR) {
+				// Fatal error
+				$this->return_status[] = self::ISEMAIL_ERR_FWS_CRLF_END;
+			}
+			elseif ($this->parsedata[self::ISEMAIL_COMPONENT_DOMAIN] === '') {
+				// Fatal error
+				$this->return_status[] = self::ISEMAIL_ERR_NODOMAIN;
+			}
+			elseif ($this->element_len === 0) {
+				// Fatal error
+				$this->return_status[] = self::ISEMAIL_ERR_DOT_END;
+			}
+			elseif ($this->hyphen_flag) {
+				$this->return_status[] = self::ISEMAIL_ERR_DOMAINHYPHENEND;
+			}
+			elseif (strlen($this->parsedata[self::ISEMAIL_COMPONENT_DOMAIN]) > 255) {
+				// http://tools.ietf.org/html/rfc5321#section-4.5.3.1.2
+				//   The maximum total length of a domain name or number is 255 octets.
+				$this->return_status[] = self::ISEMAIL_RFC5322_DOMAIN_TOOLONG;
+			}
+			elseif (strlen($this->parsedata[self::ISEMAIL_COMPONENT_LOCALPART].self::ISEMAIL_STRING_AT.$this->parsedata[self::ISEMAIL_COMPONENT_DOMAIN]) > 254) {
+				// http://tools.ietf.org/html/rfc5321#section-4.1.2
+				//   Forward-path   = Path
+				// 
+				//   Path           = "<" [ A-d-l ":" ] Mailbox ">"
+				//
+				// http://tools.ietf.org/html/rfc5321#section-4.5.3.1.3
+				//   The maximum total length of a reverse-path or forward-path is 256
+				//   octets (including the punctuation and element separators).
+				// 
+				// Thus, even without (obsolete) routing information, the Mailbox can
+				// only be 254 characters long. This is confirmed by this verified
+				// erratum to RFC 3696:
+				// 
+				// http://www.rfc-editor.org/errata_search.php?rfc=3696&eid=1690
+				//   However, there is a restriction in RFC 2821 on the length of an
+				//   address in MAIL and RCPT commands of 254 characters.  Since addresses
+				//   that do not fit in those fields are not normally useful, the upper
+				//   limit on address lengths should normally be considered to be 254.
+				$this->return_status[] = self::ISEMAIL_RFC5322_TOOLONG;
+			}
+			elseif ($this->element_len > 63) {
+				// http://tools.ietf.org/html/rfc1035#section-2.3.4
+				//   labels          63 octets or less
+				$this->return_status[] = self::ISEMAIL_RFC5322_LABEL_TOOLONG;
+			}
+		}		
 	}
 
 	/**
