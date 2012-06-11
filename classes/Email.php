@@ -330,23 +330,22 @@ class Email {
 		$this->parsedata['status'] = $this->return_status;
 	}
 
+	/**
+	 * Parsing local address part
+	 * 
+	 * @see  http://tools.ietf.org/html/rfc5322#section-3.4.1
+	 * 
+	 *     local-part      =   dot-atom / quoted-string / obs-local-part
+	 *     dot-atom        =   [CFWS] dot-atom-text [CFWS]
+	 *     dot-atom-text   =   1*atext *("." 1*atext)
+	 *     quoted-string   =   [CFWS]
+	 *                         DQUOTE *([FWS] qcontent) [FWS] DQUOTE
+	 *                         [CFWS]
+	 *     obs-local-part  =   word *("." word)
+	 *     word            =   atom / quoted-string
+	 *     atom            =   [CFWS] 1*atext [CFWS]
+	 */
 	private function parse_local_part() {
-		// http://tools.ietf.org/html/rfc5322#section-3.4.1
-		//   local-part      =   dot-atom / quoted-string / obs-local-part
-		//
-		//   dot-atom        =   [CFWS] dot-atom-text [CFWS]
-		//
-		//   dot-atom-text   =   1*atext *("." 1*atext)
-		//
-		//   quoted-string   =   [CFWS]
-		//                       DQUOTE *([FWS] qcontent) [FWS] DQUOTE
-		//                       [CFWS]
-		//
-		//   obs-local-part  =   word *("." word)
-		//
-		//   word            =   atom / quoted-string
-		//
-		//   atom            =   [CFWS] 1*atext [CFWS]
 		switch ($this->token) {
 			case self::ISEMAIL_STRING_OPENPARENTHESIS:
 				// Comment
@@ -515,46 +514,46 @@ class Email {
 		}
 	}
 
+	/**
+	 * Parsing domain address part
+	 * 
+	 * @see  http://tools.ietf.org/html/rfc5322#section-3.4.1
+	 * 
+	 *     domain          =   dot-atom / domain-literal / obs-domain
+	 *     dot-atom        =   [CFWS] dot-atom-text [CFWS]
+	 *     dot-atom-text   =   1*atext *("." 1*atext)
+	 *     domain-literal  =   [CFWS] "[" *([FWS] dtext) [FWS] "]" [CFWS]
+	 *     dtext           =   %d33-90 /          ; Printable US-ASCII
+	 *                         %d94-126 /         ;  characters not including
+	 *                         obs-dtext          ;  "[", "]", or "\"
+	 *     obs-domain      =   atom *("." atom)
+	 *     atom            =   [CFWS] 1*atext [CFWS]
+	 * 
+	 * @see  http://tools.ietf.org/html/rfc5321#section-4.1.2
+	 * 
+	 *     Mailbox         = Local-part "@" ( Domain / address-literal )
+	 *     Domain          = sub-domain *("." sub-domain)
+	 *     address-literal = "[" ( IPv4-address-literal /
+	 *                       IPv6-address-literal /
+	 *                       General-address-literal ) "]"
+	 *                       ; See Section 4.1.3
+	 * 
+	 * @see  http://tools.ietf.org/html/rfc5322#section-3.4.1
+	 * 
+	 *      Note: A liberal syntax for the domain portion of addr-spec is
+	 *      given here.  However, the domain portion contains addressing
+	 *      information specified by and used in other protocols (e.g.,
+	 *      [RFC1034], [RFC1035], [RFC1123], [RFC5321]).  It is therefore
+	 *      incumbent upon implementations to conform to the syntax of
+	 *      addresses for the context in which they are used.
+	 * 
+	 * is_email() author's note: it's not clear how to interpret this in
+	 * the context of a general email address validator. The conclusion I
+	 * have reached is this: "addressing information" must comply with
+	 * RFC 5321 (and in turn RFC 1035), anything that is "semantically
+	 * invisible" must comply only with RFC 5322.
+	 */
 	public function parse_component_domain() {
-		// http://tools.ietf.org/html/rfc5322#section-3.4.1
-		//   domain          =   dot-atom / domain-literal / obs-domain
-		//
-		//   dot-atom        =   [CFWS] dot-atom-text [CFWS]
-		//
-		//   dot-atom-text   =   1*atext *("." 1*atext)
-		//
-		//   domain-literal  =   [CFWS] "[" *([FWS] dtext) [FWS] "]" [CFWS]
-		//
-		//   dtext           =   %d33-90 /          ; Printable US-ASCII
-		//                       %d94-126 /         ;  characters not including
-		//                       obs-dtext          ;  "[", "]", or "\"
-		//
-		//   obs-domain      =   atom *("." atom)
-		//
-		//   atom            =   [CFWS] 1*atext [CFWS]
-		// 
-		// http://tools.ietf.org/html/rfc5321#section-4.1.2
-		//   Mailbox        = Local-part "@" ( Domain / address-literal )
-		//
-		//   Domain         = sub-domain *("." sub-domain)
-		//
-		//   address-literal  = "[" ( IPv4-address-literal /
-		//                    IPv6-address-literal /
-		//                    General-address-literal ) "]"
-		//                    ; See Section 4.1.3
-		// 
-		// http://tools.ietf.org/html/rfc5322#section-3.4.1
-		//      Note: A liberal syntax for the domain portion of addr-spec is
-		//      given here.  However, the domain portion contains addressing
-		//      information specified by and used in other protocols (e.g.,
-		//      [RFC1034], [RFC1035], [RFC1123], [RFC5321]).  It is therefore
-		//      incumbent upon implementations to conform to the syntax of
-		//      addresses for the context in which they are used.
-		// is_email() author's note: it's not clear how to interpret this in
-		// the context of a general email address validator. The conclusion I
-		// have reached is this: "addressing information" must comply with
-		// RFC 5321 (and in turn RFC 1035), anything that is "semantically
-		// invisible" must comply only with RFC 5322.
 		switch ($this->token) {
 			case self::ISEMAIL_STRING_OPENPARENTHESIS:
 				// Comment
@@ -713,15 +712,18 @@ class Email {
 		}
 	}
 
+	/**
+	 * Parsing literal address component
+	 * 
+	 * @see  http://tools.ietf.org/html/rfc5322#section-3.4.1
+	 * 
+	 *     domain-literal  =   [CFWS] "[" *([FWS] dtext) [FWS] "]" [CFWS]
+	 *     dtext           =   %d33-90 /          ; Printable US-ASCII
+	 *                         %d94-126 /         ;  characters not including
+	 *                         obs-dtext          ;  "[", "]", or "\"
+	 *     obs-dtext       =   obs-NO-WS-CTL / quoted-pair
+	 */
 	private function parse_component_literal() {
-		// http://tools.ietf.org/html/rfc5322#section-3.4.1
-		//   domain-literal  =   [CFWS] "[" *([FWS] dtext) [FWS] "]" [CFWS]
-		//
-		//   dtext           =   %d33-90 /          ; Printable US-ASCII
-		//                       %d94-126 /         ;  characters not including
-		//                       obs-dtext          ;  "[", "]", or "\"
-		//
-		//   obs-dtext       =   obs-NO-WS-CTL / quoted-pair
 		switch ($this->token) {
 			// End of domain literal
 			case self::ISEMAIL_STRING_CLOSESQBRACKET:
@@ -913,13 +915,17 @@ class Email {
 		}
 	}
 
+	/**
+	 * Parsing quoted string
+	 * 
+	 * @see  http://tools.ietf.org/html/rfc5322#section-3.2.4
+	 * 
+	 *     quoted-string   =   [CFWS]
+	 *                         DQUOTE *([FWS] qcontent) [FWS] DQUOTE
+	 *                         [CFWS]
+	 *     qcontent        =   qtext / quoted-pair
+	 */
 	private function parse_context_quotedstring() {
-		// http://tools.ietf.org/html/rfc5322#section-3.2.4
-		//   quoted-string   =   [CFWS]
-		//                       DQUOTE *([FWS] qcontent) [FWS] DQUOTE
-		//                       [CFWS]
-		// 
-		//   qcontent        =   qtext / quoted-pair
 		switch ($this->token) {
 			case self::ISEMAIL_STRING_BACKSLASH:
 				// Quoted pair
@@ -1002,22 +1008,24 @@ class Email {
 		// TODO
 	}
 
+	/**
+	 * Parsing quoted pair
+	 * 
+	 * @see  http://tools.ietf.org/html/rfc5322#section-3.2.1
+	 * 
+	 *     quoted-pair     =  ("\" (VCHAR / WSP)) / obs-qp
+	 *     VCHAR           =  %d33-126            ; visible (printing) characters
+	 *     WSP             =  SP / HTAB           ; white space
+	 *     obs-qp          =  "\" (%d0 / obs-NO-WS-CTL / LF / CR)
+	 *     obs-NO-WS-CTL   =  %d1-8 /            ; US-ASCII control
+	 *                        %d11 /             ;  characters that do not
+	 *                        %d12 /             ;  include the carriage
+	 *                        %d14-31 /          ;  return, line feed, and
+	 *                        %d127              ;  white space characters
+	 *     
+	 *     i.e. obs-qp     =  "\" (%d0-8, %d10-31 / %d127)
+	 */
 	private function parse_context_quotedpair() {
-		// http://tools.ietf.org/html/rfc5322#section-3.2.1
-		//   quoted-pair     =   ("\" (VCHAR / WSP)) / obs-qp
-		//
-		//   VCHAR           =  %d33-126            ; visible (printing) characters
-		//   WSP             =  SP / HTAB           ; white space
-		//
-		//   obs-qp          =   "\" (%d0 / obs-NO-WS-CTL / LF / CR)
-		//
-		//   obs-NO-WS-CTL   =   %d1-8 /            ; US-ASCII control
-		//                       %d11 /             ;  characters that do not
-		//                       %d12 /             ;  include the carriage
-		//                       %d14-31 /          ;  return, line feed, and
-		//                       %d127              ;  white space characters
-		//
-		// i.e. obs-qp       =  "\" (%d0-8, %d10-31 / %d127)
 		$ord = ord($this->token);
 
 		if ($ord > 127) {
@@ -1061,11 +1069,15 @@ class Email {
 		}
 	}
 
+	/**
+	 * Parsing comment
+	 * 
+	 * @see  http://tools.ietf.org/html/rfc5322#section-3.2.2
+	 * 
+	 *     comment         =   "(" *([FWS] ccontent) [FWS] ")"
+	 *     ccontent        =   ctext / quoted-pair / comment
+	 */
 	private function parse_context_comment() {
-		// http://tools.ietf.org/html/rfc5322#section-3.2.2
-		//   comment         =   "(" *([FWS] ccontent) [FWS] ")"
-		//
-		//   ccontent        =   ctext / quoted-pair / comment
 		switch ($this->token) {
 			case self::ISEMAIL_STRING_OPENPARENTHESIS:
 				// Nested comment
@@ -1142,20 +1154,27 @@ class Email {
 		}
 	}
 
+	/**
+	 * Parsing folding white space
+	 * 
+	 * @see  http://tools.ietf.org/html/rfc5322#section-3.2.2
+	 * 
+	 *     FWS             =   ([*WSP CRLF] 1*WSP) /  obs-FWS
+	 *                         ; Folding white space
+	 * 
+	 * But note the erratum:
+	 * 
+	 * @see  http://www.rfc-editor.org/errata_search.php?rfc=5322&eid=1908
+	 * 
+	 *     In the obsolete syntax, any amount of folding white space MAY be
+	 *     inserted where the obs-FWS rule is allowed.  This creates the
+	 *     possibility of having two consecutive "folds" in a line, and
+	 *     therefore the possibility that a line which makes up a folded header
+	 *     field could be composed entirely of white space.
+	 * 
+	 *     obs-FWS         =   1*([CRLF] WSP)
+	 */
 	private function parse_context_fws() {
-		// http://tools.ietf.org/html/rfc5322#section-3.2.2
-		//   FWS             =   ([*WSP CRLF] 1*WSP) /  obs-FWS
-		//                                          ; Folding white space
-		// 
-		// But note the erratum:
-		// http://www.rfc-editor.org/errata_search.php?rfc=5322&eid=1908:
-		//   In the obsolete syntax, any amount of folding white space MAY be
-		//   inserted where the obs-FWS rule is allowed.  This creates the
-		//   possibility of having two consecutive "folds" in a line, and
-		//   therefore the possibility that a line which makes up a folded header
-		//   field could be composed entirely of white space.
-		//
-		//   obs-FWS         =   1*([CRLF] WSP)
 		if ($this->token_prior === self::ISEMAIL_STRING_CR) {
 			if ($this->token === self::ISEMAIL_STRING_CR) {
 				// Fatal error
@@ -1221,25 +1240,31 @@ class Email {
 		$this->token_prior = $this->token;
 	}
 
+	/**
+	 * Checking DNS records
+	 * 
+	 * @see  http://tools.ietf.org/html/rfc5321#section-2.3.5
+	 * 
+	 *     Names that can
+	 *     be resolved to MX RRs or address (i.e., A or AAAA) RRs (as discussed
+	 *     in Section 5) are permitted, as are CNAME RRs whose targets can be
+	 *     resolved, in turn, to MX or address RRs.
+	 * 
+	 * @see  http://tools.ietf.org/html/rfc5321#section-5.1
+	 * 
+	 *     The lookup first attempts to locate an MX record associated with the
+	 *     name.  If a CNAME record is found, the resulting name is processed as
+	 *     if it were the initial name. ... If an empty list of MXs is returned,
+	 *     the address is treated as if it was associated with an implicit MX
+	 *     RR, with a preference of 0, pointing to that host.
+	 * 
+	 * is_email() author's note: We will regard the existence of a CNAME to be
+	 * sufficient evidence of the domain's existence. For performance reasons
+	 * we will not repeat the DNS lookup for the CNAME's target, but we will
+	 * raise a warning because we didn't immediately find an MX record.
+	 */
 	private function check_dns() {
 		if (( (int) max($this->return_status) < self::ISEMAIL_DNSWARN) && function_exists('dns_get_record')) {
-			// http://tools.ietf.org/html/rfc5321#section-2.3.5
-			//   Names that can
-			//   be resolved to MX RRs or address (i.e., A or AAAA) RRs (as discussed
-			//   in Section 5) are permitted, as are CNAME RRs whose targets can be
-			//   resolved, in turn, to MX or address RRs.
-			// 
-			// http://tools.ietf.org/html/rfc5321#section-5.1
-			//   The lookup first attempts to locate an MX record associated with the
-			//   name.  If a CNAME record is found, the resulting name is processed as
-			//   if it were the initial name. ... If an empty list of MXs is returned,
-			//   the address is treated as if it was associated with an implicit MX
-			//   RR, with a preference of 0, pointing to that host.
-			// 
-			// is_email() author's note: We will regard the existence of a CNAME to be
-			// sufficient evidence of the domain's existence. For performance reasons
-			// we will not repeat the DNS lookup for the CNAME's target, but we will
-			// raise a warning because we didn't immediately find an MX record.
 			if ($this->element_count === 0) {
 				// Checking TLD DNS seems to work only if you explicitly check from the root
 				$this->parsedata[self::ISEMAIL_COMPONENT_DOMAIN] .= '.';
@@ -1270,39 +1295,43 @@ class Email {
 		}
 	}
 
+	/**
+	 * Checking for TLD addresses
+	 * 
+	 * TLD addresses are specifically allowed in RFC 5321 but they are
+	 * unusual to say the least. We will allocate a separate
+	 * status to these addresses on the basis that they are more likely
+	 * to be typos than genuine addresses (unless we've already
+	 * established that the domain does have an MX record)
+	 * 
+	 * @see  http://tools.ietf.org/html/rfc5321#section-2.3.5
+	 * 
+	 *     In the case
+	 *     of a top-level domain used by itself in an email address, a single
+	 *     string is used without any dots.  This makes the requirement,
+	 *     described in more detail below, that only fully-qualified domain
+	 *     names appear in SMTP transactions on the public Internet,
+	 *     particularly important where top-level domains are involved.
+	 * 
+	 * TLD format
+	 * 
+	 * The format of TLDs has changed a number of times. The standards
+	 * used by IANA have been largely ignored by ICANN, leading to
+	 * confusion over the standards being followed. These are not defined
+	 * anywhere, except as a general component of a DNS host name (a label).
+	 * However, this could potentially lead to 123.123.123.123 being a
+	 * valid DNS name (rather than an IP address) and thereby creating
+	 * an ambiguity. The most authoritative statement on TLD formats that
+	 * the author can find is in a (rejected!) erratum to RFC 1123
+	 * submitted by John Klensin, the author of RFC 5321:
+	 * 
+	 * @see  http://www.rfc-editor.org/errata_search.php?rfc=1123&eid=1353
+	 * 
+	 *     However, a valid host name can never have the dotted-decimal
+	 *     form #.#.#.#, since this change does not permit the highest-level
+	 *     component label to start with a digit even if it is not all-numeric.
+	 */
 	private function check_tld_address() {
-		// Check for TLD addresses
-		// -----------------------
-		// TLD addresses are specifically allowed in RFC 5321 but they are
-		// unusual to say the least. We will allocate a separate
-		// status to these addresses on the basis that they are more likely
-		// to be typos than genuine addresses (unless we've already
-		// established that the domain does have an MX record)
-		// 
-		// http://tools.ietf.org/html/rfc5321#section-2.3.5
-		//   In the case
-		//   of a top-level domain used by itself in an email address, a single
-		//   string is used without any dots.  This makes the requirement,
-		//   described in more detail below, that only fully-qualified domain
-		//   names appear in SMTP transactions on the public Internet,
-		//   particularly important where top-level domains are involved.
-		// 
-		// TLD format
-		// ----------
-		// The format of TLDs has changed a number of times. The standards
-		// used by IANA have been largely ignored by ICANN, leading to
-		// confusion over the standards being followed. These are not defined
-		// anywhere, except as a general component of a DNS host name (a label).
-		// However, this could potentially lead to 123.123.123.123 being a
-		// valid DNS name (rather than an IP address) and thereby creating
-		// an ambiguity. The most authoritative statement on TLD formats that
-		// the author can find is in a (rejected!) erratum to RFC 1123
-		// submitted by John Klensin, the author of RFC 5321:
-		// 
-		// http://www.rfc-editor.org/errata_search.php?rfc=1123&eid=1353
-		//   However, a valid host name can never have the dotted-decimal
-		//   form #.#.#.#, since this change does not permit the highest-level
-		//   component label to start with a digit even if it is not all-numeric.
 		if ( ! $this->dns_checked && ( (int) max($this->return_status) < self::ISEMAIL_DNSWARN)) {
 			if ($this->element_count === 0) {
 				$this->return_status[] = self::ISEMAIL_RFC5321_TLD;
